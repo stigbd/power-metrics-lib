@@ -1,0 +1,63 @@
+[project]
+name = "training-watt-lib"
+version = "0.1.0"
+description = "A project implementing a library to calculate the normalized power and other metrics from an activity or workout file."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.13"
+dependencies = ["garmin-fit-sdk>=21.141.0", "pandas>=2.2.3"]
+
+[tool.uv]
+dev-dependencies = [
+    "deptry>=0.21.0",
+    "poethepoet>=0.30.0",
+    "pyright>=1.1.388",
+    "pytest-cov>=6.0.0",
+    "pytest>=8.3.3",
+    "ruff>=0.7.3",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+# and then manually ignore annoying ones:
+ignore = ["COM812", "D203", "D211", "D213", "ISC001"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+    # at least this three should be fine in tests:
+    "S101",   # asserts allowed in tests...
+    "ANN401", # Any should be allowed
+    #     "ARG",  # Unused function args -> fixtures nevertheless are functionally relevant...
+    #     "FBT",  # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+]
+
+[tool.ruff.lint.isort]
+# so it knows to group first-party stuff last
+known-first-party = ["training_watt_lib"]
+
+[tool.ruff.lint.pydocstyle]
+# Use Google-style docstrings.
+convention = "google"
+
+[tool.pyright]
+venvPath = "." # rye installs the venv in the current dir
+venv = ".venv" # in a folder called `.venv`
+
+[tool.coverage.paths]
+source = ["training_watt_lib"]
+
+[tool.coverage.run]
+branch = true
+omit = ["tests/*"]
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+
+[tool.poe.tasks]
+fmt = "uv run ruff format"
+lint = "uv run ruff check --fix"
+pyright = "uv run pyright"
+check-deps = "uv run deptry ."
+tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html"
+release = ["lint", "pyright", "check-deps", "tests"]
