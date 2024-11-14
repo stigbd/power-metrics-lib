@@ -3,7 +3,7 @@
 
 def test_calculate_average_power() -> None:
     """Test the calculate_average_power function."""
-    from training_watt_lib.calculate_metrics import calculate_average_power
+    from power_metrics_lib.calculate_metrics import calculate_average_power
 
     power_data = [100, 200, 300, 400, 500]
     expected_result = 300.0
@@ -11,49 +11,55 @@ def test_calculate_average_power() -> None:
     assert calculate_average_power(power_data) == expected_result
 
 
-def test_calculate_normalised_power() -> None:
-    """Test the calculate_normalised_power function."""
-    from training_watt_lib.calculate_metrics import calculate_normalised_power
+def test_calculate_normalized_power() -> None:
+    """Test the calculate_normalized_power function."""
+    from power_metrics_lib.calculate_metrics import calculate_normalized_power
 
     power_data = [150, 156, 158, 161, 168, 162, 159]
     window_size = 3
     expected_result = 161.0
 
     assert (
-        calculate_normalised_power(power_data, window_size=window_size)
+        calculate_normalized_power(power_data, window_size=window_size)
         == expected_result
     )
 
 
 def test_calculate_intensity_factor() -> None:
     """Test the calculate_intensity_factor function."""
-    from training_watt_lib.calculate_metrics import calculate_intensity_factor
+    from power_metrics_lib.calculate_metrics import calculate_intensity_factor
 
-    normalised_power = 300
+    normalized_power = 300
     ftp = 200
     expected_result = 1.5
 
-    assert calculate_intensity_factor(normalised_power, ftp) == expected_result
+    assert calculate_intensity_factor(normalized_power, ftp) == expected_result
 
 
 def test_calculate_training_stress_score() -> None:
     """Test the calculate_training_stress_score function."""
-    from training_watt_lib.calculate_metrics import calculate_training_stress_score
+    from power_metrics_lib.calculate_metrics import calculate_training_stress_score
 
-    normalised_power = 300
+    normalized_power = 300
     ftp = 200
     duration = 3600
+    intensity_factor = 1.5
     expected_result = 225
 
     assert (
-        calculate_training_stress_score(normalised_power, ftp, duration)
+        calculate_training_stress_score(
+            normalized_power=normalized_power,
+            ftp=ftp,
+            duration=duration,
+            intensity_factor=intensity_factor,
+        )
         == expected_result
     )
 
 
 def test_calculate_total_work() -> None:
     """Test the calculate_total_work function."""
-    from training_watt_lib.calculate_metrics import calculate_total_work
+    from power_metrics_lib.calculate_metrics import calculate_total_work
 
     power_data = [100, 200, 300, 400, 500]
     expected_result = 1500
@@ -63,7 +69,7 @@ def test_calculate_total_work() -> None:
 
 def test_calculate_duration() -> None:
     """Test the calculate_duration function."""
-    from training_watt_lib.calculate_metrics import calculate_duration
+    from power_metrics_lib.calculate_metrics import calculate_duration
 
     power_data = [100, 200, 300, 400, 500]
     expected_result = {"seconds": 5, "hh:mm:ss": "0:00:05"}
@@ -73,7 +79,7 @@ def test_calculate_duration() -> None:
 
 def test_calculate_max_power() -> None:
     """Test the calculate_max_power function."""
-    from training_watt_lib.calculate_metrics import calculate_max_power
+    from power_metrics_lib.calculate_metrics import calculate_max_power
 
     power_data = [100, 200, 300, 400, 500]
     expected_result = 500

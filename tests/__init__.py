@@ -1,1 +1,1 @@
-"""Test package for the training_watt_lib package."""
+"""Test package for the power_metrics_lib package."""
