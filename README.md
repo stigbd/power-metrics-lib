@@ -29,3 +29,5 @@ Normalized power can be calculated using the following method:
 - [Normalized Power](https://www.trainingpeaks.com/blog/normalized-power/)
 - [FIT File Viewer](https://www.fitfileviewer.com/)
 - [Training tools](https://www.mapmytracks.com/tools/tss-calculator)
+- [Zwift Workout Editor](https://www.zwiftworkout.com/)
+- [Test file on Strava](https://www.strava.com/activities/12868899187)

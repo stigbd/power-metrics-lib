@@ -1,6 +1,5 @@
 """Test module the fit_file_parser.py module."""
 
-
 from training_watt_lib.fit_file_parser import parse_fit_file
 
 TEST_FILE = "tests/files/file.fit"
