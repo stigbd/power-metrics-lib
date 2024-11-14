@@ -1,6 +1,8 @@
 """Test module the fit_file_parser.py module."""
 
-from training_watt_lib.fit_file_parser import parse_fit_file
+import pytest
+
+from power_metrics_lib.fit_file_parser import parse_fit_file
 
 TEST_FILE = "tests/files/file.fit"
 EXPECTED_NO_OF_RECORDS = 7023
@@ -23,3 +25,8 @@ def test_parse_fit_file() -> None:
     expected_power = 106
     assert parsed_data[0]["timestamp"] == expected_timestamp
     assert parsed_data[0]["power"] == expected_power
+
+def test_parse_fit_file_file_not_found() -> None:
+    """Test the parse_fit_file function."""
+    with pytest.raises(FileNotFoundError):
+        parse_fit_file("file_not_found.fit")

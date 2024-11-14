@@ -1,5 +1,5 @@
 [project]
-name = "training-watt-lib"
+name = "power-metrics-lib"
 version = "0.1.0"
 description = "A project implementing a library to calculate the normalized power and other metrics from an activity or workout file."
 readme = "README.md"
@@ -10,17 +10,21 @@ dependencies = ["garmin-fit-sdk>=21.141.0", "pandas>=2.2.3"]
 [tool.uv]
 dev-dependencies = [
     "deptry>=0.21.0",
+    "mkdocs>=1.6.1",
+    "mkdocstrings[python]>=0.27.0",
     "poethepoet>=0.30.0",
+    "pygments>=2.18.0",
     "pyright>=1.1.388",
     "pytest-cov>=6.0.0",
     "pytest>=8.3.3",
     "ruff>=0.7.3",
+    "xdoctest>=1.2.0",
 ]
 
 [tool.ruff.lint]
 select = ["ALL"]
 # and then manually ignore annoying ones:
-ignore = ["COM812", "D203", "D211", "D213", "ISC001"]
+ignore = ["COM812", "ISC001"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**/*.py" = [
@@ -33,7 +37,7 @@ ignore = ["COM812", "D203", "D211", "D213", "ISC001"]
 
 [tool.ruff.lint.isort]
 # so it knows to group first-party stuff last
-known-first-party = ["training_watt_lib"]
+known-first-party = ["power_metrics_lib"]
 
 [tool.ruff.lint.pydocstyle]
 # Use Google-style docstrings.
@@ -44,7 +48,7 @@ venvPath = "." # rye installs the venv in the current dir
 venv = ".venv" # in a folder called `.venv`
 
 [tool.coverage.paths]
-source = ["training_watt_lib"]
+source = ["power_metrics_lib"]
 
 [tool.coverage.run]
 branch = true
@@ -60,4 +64,5 @@ lint = "uv run ruff check --fix"
 pyright = "uv run pyright"
 check-deps = "uv run deptry ."
 tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html"
-release = ["lint", "pyright", "check-deps", "tests"]
+xdoctest = "uv run xdoctest --quiet power_metrics_lib "
+release = ["lint", "pyright", "check-deps", "tests", "xdoctest"]

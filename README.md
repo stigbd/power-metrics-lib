@@ -19,7 +19,7 @@ Normalized power can be calculated using the following method:
 ## Usage
 
 ```zsh
-% uv run training-watt-lib/hello.py
+% uv run power-metrics-lib/hello.py
 ```
 
 ## References
