@@ -26,6 +26,7 @@ def test_parse_fit_file() -> None:
     assert parsed_data[0]["timestamp"] == expected_timestamp
     assert parsed_data[0]["power"] == expected_power
 
+
 def test_parse_fit_file_file_not_found() -> None:
     """Test the parse_fit_file function."""
     with pytest.raises(FileNotFoundError):

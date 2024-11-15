@@ -3,7 +3,7 @@ name = "power-metrics-lib"
 version = "0.1.0"
 description = "A project implementing a library to calculate the normalized power and other metrics from an activity or workout file."
 readme = "README.md"
-license = "MIT"
+license = { file = "LICENSE" }
 requires-python = ">=3.13"
 dependencies = ["garmin-fit-sdk>=21.141.0", "pandas>=2.2.3"]
 
@@ -34,7 +34,10 @@ ignore = ["COM812", "ISC001"]
     #     "ARG",  # Unused function args -> fixtures nevertheless are functionally relevant...
     #     "FBT",  # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
 ]
-
+"notebooks/**/*.ipynb" = [
+    "E501", # longer lines is ok
+    "T201", # print statements are allowed in notebooks
+]
 [tool.ruff.lint.isort]
 # so it knows to group first-party stuff last
 known-first-party = ["power_metrics_lib"]
@@ -47,8 +50,11 @@ convention = "google"
 venvPath = "." # rye installs the venv in the current dir
 venv = ".venv" # in a folder called `.venv`
 
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+
 [tool.coverage.paths]
-source = ["power_metrics_lib"]
+source = ["src/power_metrics_lib"]
 
 [tool.coverage.run]
 branch = true
@@ -58,11 +64,14 @@ omit = ["tests/*"]
 fail_under = 100
 show_missing = true
 
+[tool.deptry]
+ignore_notebooks = true
+
 [tool.poe.tasks]
 fmt = "uv run ruff format"
 lint = "uv run ruff check --fix"
 pyright = "uv run pyright"
 check-deps = "uv run deptry ."
 tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov"
-xdoctest = "uv run xdoctest --quiet power_metrics_lib "
+xdoctest = "uv run xdoctest --quiet -m src/power_metrics_lib "
 release = ["lint", "pyright", "check-deps", "tests", "xdoctest"]

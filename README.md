@@ -51,6 +51,28 @@ training_stress_score: float = pm.calculate_training_stress_score(
      duration=duration["seconds"],
      )
 ```
+## Install the library into the virtual environment
+
+```zsh
+% uv pip install -e .
+```
+## Notebooks
+
+The project includes a Jupyter notebook to demonstrate how to use the library.
+
+Start the JupyterLab server:
+
+```zsh
+% uv run --with jupyter jupyter lab
+```
+
+Choose the kernel `power-metrics` to run the notebook.
+
+To install packages in a Jupyter notebook without persisting the change this project, use the following command:
+
+```notebook
+!uv pip install matplotlib
+```
 
 ## References
 
@@ -61,3 +83,6 @@ training_stress_score: float = pm.calculate_training_stress_score(
 - [Training tools](https://www.mapmytracks.com/tools/tss-calculator)
 - [Zwift Workout Editor](https://www.zwiftworkout.com/)
 - [Test file on Strava](https://www.strava.com/activities/12868899187)
+
+- Notebooks:
+  - [Using uv with Jupyter](https://docs.astral.sh/uv/guides/integration/jupyter/)
