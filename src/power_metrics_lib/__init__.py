@@ -4,12 +4,12 @@ This package provides a set of functions to calculate power based metrics.
 
 
 Examples:
-    >>> from power_metrics_lib.fit_file_parser import parse_fit_file
+    >>> from power_metrics_lib.file_parsers import parse_fit_activity_file
     >>> import power_metrics_lib.calculate_metrics as pm
     >>>
     >>> file_path = "tests/files/file.fit"
     >>> # Parse the .fit file:
-    >>> activity_data: list[dict] = parse_fit_file(file_path)
+    >>> activity_data: list[dict] = parse_fit_activity_file(file_path)
     >>>
     >>> # Extract the power data from the activity data:
     >>> power_data: list[int] = [d["power"] for d in activity_data]

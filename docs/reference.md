@@ -1,9 +1,9 @@
 # Reference
 
-::: power_metrics_lib.fit_file_parser
+::: power_metrics_lib.file_parsers
     options:
       members:
-       - parse_fit_file
+       - parse_fit_activity_file
 
 ::: power_metrics_lib.calculate_metrics
     options:

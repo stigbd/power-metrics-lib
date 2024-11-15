@@ -3,7 +3,7 @@
 from garmin_fit_sdk import Decoder, Stream
 
 
-def parse_fit_file(file_path: str) -> list[dict[str, str | int | float]]:
+def parse_fit_activity_file(file_path: str) -> list[dict[str, str | int | float]]:
     """Parse a .fit file and return a list of dicts.
 
     Args:
@@ -17,9 +17,9 @@ def parse_fit_file(file_path: str) -> list[dict[str, str | int | float]]:
         ValueError: If there are any errors parsing the .fit file.
 
     Examples:
-        >>> from power_metrics_lib.fit_file_parser import parse_fit_file
+        >>> from power_metrics_lib.file_parsers import parse_fit_activity_file
         >>> # Parse the .fit file:
-        >>> activity_data: list[dict] = parse_fit_file("tests/files/file.fit")
+        >>> activity_data: list[dict] = parse_fit_activity_file("tests/files/file.fit")
         >>>
         >>>
         >>> # Extract the power data from the activity data:
@@ -30,13 +30,19 @@ def parse_fit_file(file_path: str) -> list[dict[str, str | int | float]]:
     except FileNotFoundError as e:
         msg = f"File not found: {file_path}"
         raise FileNotFoundError(msg) from e
+
     decoder = Decoder(stream)
     messages, errors = decoder.read(
         convert_datetimes_to_dates=False,
         convert_types_to_strings=True,
     )
+
     if len(errors) > 0:  # pragma: no cover
         msg = "\n".join(errors)
-        raise ValueError(msg)
+        raise ValueError(msg) from None
+
+    if "record_mesgs" not in messages:
+        msg = "No record messages found in the .fit file."
+        raise ValueError(msg) from None
 
     return messages["record_mesgs"]
