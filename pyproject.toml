@@ -63,6 +63,6 @@ fmt = "uv run ruff format"
 lint = "uv run ruff check --fix"
 pyright = "uv run pyright"
 check-deps = "uv run deptry ."
-tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html"
+tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov"
 xdoctest = "uv run xdoctest --quiet power_metrics_lib "
 release = ["lint", "pyright", "check-deps", "tests", "xdoctest"]
