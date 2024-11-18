@@ -16,6 +16,8 @@ plugins:
 
 nav:
   - index.md
+  - activities.md
+  - workouts.md
   - reference.md
 
 watch:

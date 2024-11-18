@@ -15,21 +15,19 @@ File formats supported:
 ## Usage
 
 ```python
-from power_metrics_lib.file_parsers import parse_fit_activity_file
+from power_metrics_lib.file_parsers import parse_activity_file
 import power_metrics_lib.calculate_metrics as pm
+from power_metrics_lib.models import Activity
 
 file_path = "tests/files/file.fit"
 # Parse the .fit file:
-activity_data: list[dict] = parse_fit_activity_file(file_path)
-
-# Extract the power data from the activity data:
-power_data: list[int] = [d["power"] for d in activity_data]
+activity: Activity = parse_activity_file(file_path)
 
 # Calculate the average power:
-average_power: float = pm.calculate_average_power(power_data)
+average_power: float = pm.calculate_average_power(activity.power)
 
 # Calculate the normalized power:
-normalized_power: float = pm.calculate_normalized_power(power_data)
+normalized_power: float = pm.calculate_normalized_power(activity.power)
 
 # Set your FTP:
 ftp: int = 300
@@ -40,15 +38,12 @@ intensity_factor: float = pm.calculate_intensity_factor(
      ftp=ftp,
      )
 
-# Calculate the duration:
-duration: dict[str, int |str ] = pm.calculate_duration(power_data)
-
 # Calculate the training stress score:
 training_stress_score: float = pm.calculate_training_stress_score(
      normalized_power=normalized_power,
      intensity_factor=intensity_factor,
      ftp=ftp,
-     duration=duration["seconds"],
+     duration=activity.duration,
      )
 ```
 ## Install the library into the virtual environment

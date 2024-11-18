@@ -1,29 +1,30 @@
-"""Module for parsing .fit files."""
+"""Module for parsing activity files."""
 
 from garmin_fit_sdk import Decoder, Stream
 
+from power_metrics_lib.models import Activity
 
-def parse_fit_activity_file(file_path: str) -> list[dict[str, str | int | float]]:
+
+def parse_activity_file(file_path: str) -> Activity:
     """Parse a .fit file and return a list of dicts.
 
     Args:
         file_path (str): The path to the .fit file.
 
     Returns:
-        list[dict[str, str | int | float]]: A list of dicts containing the parsed data.
+        An activity object.
 
     Raises:
         FileNotFoundError: If the file does not exist.
         ValueError: If there are any errors parsing the .fit file.
 
     Examples:
-        >>> from power_metrics_lib.file_parsers import parse_fit_activity_file
+        >>> from power_metrics_lib.file_parsers import parse_activity_file
         >>> # Parse the .fit file:
-        >>> activity_data: list[dict] = parse_fit_activity_file("tests/files/file.fit")
+        >>> activity: Activity = parse_activity_file("tests/files/file.fit")
         >>>
-        >>>
-        >>> # Extract the power data from the activity data:
-        >>> power_data: list[int] = [d["power"] for d in activity_data]
+        >>> # Get the power data from the activity object:
+        >>> power_data: list[int] = activity.power
     """
     try:
         stream = Stream.from_file(file_path)
@@ -45,4 +46,7 @@ def parse_fit_activity_file(file_path: str) -> list[dict[str, str | int | float]
         msg = "No record messages found in the .fit file."
         raise ValueError(msg) from None
 
-    return messages["record_mesgs"]
+    return Activity(
+        timestamps=[m["timestamp"] for m in messages["record_mesgs"]],
+        power=[m["power"] for m in messages["record_mesgs"]],
+    )

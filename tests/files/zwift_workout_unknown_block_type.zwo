@@ -6,6 +6,6 @@
   <durationType>time</durationType>
   <tags/>
   <workout>
-    <UnknownStepType Duration="600" PowerLow="0.25" PowerHigh="0.75" pace="0"/>
+    <UnknownBlockType Duration="600" PowerLow="0.25" PowerHigh="0.75" pace="0"/>
   </workout>
 </workout_file>
