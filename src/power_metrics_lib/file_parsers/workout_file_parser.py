@@ -45,12 +45,12 @@ def parse_workout_file(file_path: str) -> Workout:
     for block in blocks_in_workout:
         if block.tag == "SteadyState":
             power = float(block.attrib["Power"])
-            duration = int(block.attrib["Duration"])
+            duration = int(round(float(block.attrib["Duration"])))
             blocks.append(SteadyState(power=power, duration=duration))
         elif block.tag in ("Cooldown", "Warmup", "Ramp"):
             power_low = float(block.attrib["PowerLow"])
             power_high = float(block.attrib["PowerHigh"])
-            duration = int(block.attrib["Duration"])
+            duration = int(round(float(block.attrib["Duration"])))
             if block.tag == "Cooldown":
                 blocks.append(
                     Cooldown(
@@ -72,8 +72,8 @@ def parse_workout_file(file_path: str) -> Workout:
             repeat = int(block.attrib["Repeat"])
             on_power = float(block.attrib["OnPower"])
             off_power = float(block.attrib["OffPower"])
-            on_duration = int(block.attrib["OnDuration"])
-            off_duration = int(block.attrib["OffDuration"])
+            on_duration = int(round(float(block.attrib["OnDuration"])))
+            off_duration = int(round(float(block.attrib["OffDuration"])))
 
             blocks.append(
                 Interval(
@@ -85,7 +85,7 @@ def parse_workout_file(file_path: str) -> Workout:
                 )
             )
         elif block.tag == "FreeRide":
-            duration = int(block.attrib["Duration"])
+            duration = int(round(float(block.attrib["Duration"])))
             blocks.append(FreeRide(duration=duration))
         else:
             msg = f"Unknown block type: {block.tag}"

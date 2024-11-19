@@ -12,7 +12,7 @@ from power_metrics_lib.models import (
 )
 
 
-def transform_workout_to_activity(workout: Workout, ftp: int) -> Activity: # noqa: C901
+def transform_workout_to_activity(workout: Workout, ftp: int) -> Activity:  # noqa: C901
     """Converts a workout to an activity.
 
     Args:
