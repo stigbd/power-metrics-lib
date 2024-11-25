@@ -73,7 +73,7 @@ ignore_notebooks = true
 known_first_party = ["power_metrics_lib"]
 
 [tool.poe.tasks]
-fmt = "uv run ruff format"
+format = "uv run ruff format"
 lint = "uv run ruff check --fix"
 pyright = "uv run pyright"
 check-deps = "uv run deptry ."

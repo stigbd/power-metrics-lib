@@ -2,10 +2,8 @@
 
 from garmin_fit_sdk import Decoder, Stream
 
-from power_metrics_lib.models import Activity
 
-
-def parse_activity_file(file_path: str) -> Activity:
+def parse_activity_file(file_path: str) -> list[dict[str, int | float]]:
     """Parse a .fit file and return a list of dicts.
 
     Args:
@@ -21,10 +19,10 @@ def parse_activity_file(file_path: str) -> Activity:
     Examples:
         >>> from power_metrics_lib.file_parsers import parse_activity_file
         >>> # Parse the .fit file:
-        >>> activity: Activity = parse_activity_file("tests/files/file.fit")
+        >>> activity = parse_activity_file("tests/files/file.fit")
         >>>
-        >>> # Get the power data from the activity object:
-        >>> power_data: list[int] = activity.power
+        >>> # Get the power data from the list of dicts:
+        >>> power_data: list[int] = [a["power"] for a in activity]
     """
     try:
         stream = Stream.from_file(file_path)
@@ -46,7 +44,4 @@ def parse_activity_file(file_path: str) -> Activity:
         msg = "No record messages found in the .fit file."
         raise ValueError(msg) from None
 
-    return Activity(
-        timestamps=[m["timestamp"] for m in messages["record_mesgs"]],
-        power=[m["power"] for m in messages["record_mesgs"]],
-    )
+    return messages["record_mesgs"]

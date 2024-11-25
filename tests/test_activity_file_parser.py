@@ -1,9 +1,8 @@
-"""Test module the file_parser.py module."""
+"""Unit test module the file_parser.py module."""
 
 import pytest
 
-from power_metrics_lib.file_parsers import parse_activity_file
-from power_metrics_lib.models import Activity
+from power_metrics_lib.models.activity import parse_activity_file
 
 
 # Activity files:
@@ -13,13 +12,13 @@ def test_parse_activity_file() -> None:
 
     activity = parse_activity_file(test_file)
 
-    assert isinstance(activity, Activity)
+    assert isinstance(activity, list)
 
     # Check that the first record has the expected values:
     expected_timestamp = 1100178981
     expected_power = 106
-    assert activity.timestamps[0] == expected_timestamp
-    assert activity.power[0] == expected_power
+    assert activity[0]["timestamp"] == expected_timestamp
+    assert activity[0]["power"] == expected_power
 
 
 def test_parse_activity_file_file_not_found() -> None:

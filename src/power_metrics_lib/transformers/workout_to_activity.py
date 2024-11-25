@@ -25,7 +25,7 @@ def transform_workout_to_activity(workout: Workout, ftp: int) -> Activity:  # no
     Raises:
         TypeError: If the block type is invalid.
     """
-    activity = Activity(timestamps=[], power=[])
+    activity = Activity()
     timestamp = 1
     for block in workout.blocks:
         if isinstance(block, Warmup | Cooldown | Ramp):
@@ -45,13 +45,13 @@ def transform_workout_to_activity(workout: Workout, ftp: int) -> Activity:  # no
                 timestamp += 1
         elif isinstance(block, Interval):
             for _ in range(block.repeat):
-                for _ in range(block.work_duration):
+                for _ in range(block.on_duration):
                     activity.timestamps.append(timestamp)
-                    activity.power.append(round(block.work_power * ftp))
+                    activity.power.append(round(block.on_power * ftp))
                     timestamp += 1
-                for _ in range(block.rest_duration):
+                for _ in range(block.off_duration):
                     activity.timestamps.append(timestamp)
-                    activity.power.append(round(block.rest_power * ftp))
+                    activity.power.append(round(block.off_power * ftp))
                     timestamp += 1
         elif isinstance(block, FreeRide):
             pass
