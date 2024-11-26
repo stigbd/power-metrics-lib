@@ -1,4 +1,4 @@
-site_name: "Training watt library"
+site_name: "Power metrics library"
 
 theme:
   name: "readthedocs"

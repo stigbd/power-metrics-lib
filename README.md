@@ -25,10 +25,10 @@ activity: Activity = Activity(file_path=file_path)
 ftp: int = 300
 
 # Calculate all the metrics:
-activity.calculate_metrics(activity)
+activity.calculate_metrics(ftp=ftp)
 
 # Investigate the metrics:
-print(activity.metrics.average_power)
+print(activity.metrics)
 ```
 ## Install the library into the virtual environment
 
