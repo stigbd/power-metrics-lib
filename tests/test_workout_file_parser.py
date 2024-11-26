@@ -1,9 +1,8 @@
-"""Test module the file_parser.py module."""
+"""Unit test module the file_parser.py module."""
 
 import pytest
 
 from power_metrics_lib.file_parsers import parse_workout_file
-from power_metrics_lib.models import Workout
 
 
 def test_parse_workout_file() -> None:
@@ -13,8 +12,8 @@ def test_parse_workout_file() -> None:
 
     workout = parse_workout_file(test_file)
 
-    assert isinstance(workout, Workout)
-    assert len(workout.blocks) == expected_no_of_blocks
+    assert isinstance(workout, list)
+    assert len(workout) == expected_no_of_blocks
 
 
 def test_parse_workout_file_file_not_found() -> None:

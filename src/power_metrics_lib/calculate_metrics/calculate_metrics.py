@@ -1,7 +1,5 @@
 """Module to calculate power based metrics."""
 
-from datetime import timedelta
-
 import pandas as pd
 
 
@@ -35,6 +33,10 @@ def calculate_normalized_power(power_data: list[int], window_size: int = 30) -> 
         >>> calculate_normalized_power([100, 200, 300, 400, 500], window_size = 3)
         329.0
     """
+    if len(power_data) < window_size:
+        msg = "The window size must be < the length of the power data."
+        raise ValueError(msg)
+
     series = pd.Series(power_data)
     series = series.dropna()
     windows = series.rolling(window_size)
@@ -87,14 +89,14 @@ def calculate_training_stress_score(
     return (normalized_power * intensity_factor * duration) / (ftp * 3600) * 100
 
 
-def calculate_total_work(power_data: list[int]) -> float:
+def calculate_total_work(power_data: list[int]) -> int:
     """Calculate the total work from power data.
 
     Args:
         power_data (list[int]): A list of power data.
 
     Returns:
-        float: The total work.
+        int: The total work.
 
     Examples:
         >>> calculate_total_work([100, 200, 300, 400, 500])
@@ -103,14 +105,14 @@ def calculate_total_work(power_data: list[int]) -> float:
     return sum(power_data)
 
 
-def calculate_max_power(power_data: list[int]) -> float:
+def calculate_max_power(power_data: list[int]) -> int:
     """Calculate the max power from power data.
 
     Args:
         power_data (list[int]): A list of power data.
 
     Returns:
-        float: The max power.
+        int: The max power.
 
     Examples:
         >>> calculate_max_power([100, 200, 300, 400, 500])
@@ -119,20 +121,17 @@ def calculate_max_power(power_data: list[int]) -> float:
     return max(power_data)
 
 
-def calculate_duration(power_data: list[int]) -> dict[str, int | str]:
+def calculate_duration(timestamps: list[int]) -> int:
     """Calculate the duration from power data.
 
     Args:
-        power_data (list[int]): A list of power data.
+        timestamps (list[int]): A list of timestamps.
 
     Returns:
-        dict[str, int | str]: The duration in seconds and hh:mm:ss format.
+        int: The duration in seconds.
 
     Examples:
         >>> calculate_duration([100, 200, 300, 400, 500])
-        {'seconds': 5, 'hh:mm:ss': '0:00:05'}
+        5
     """
-    return {
-        "seconds": len(power_data),
-        "hh:mm:ss": str(timedelta(seconds=len(power_data))),
-    }
+    return len(timestamps)

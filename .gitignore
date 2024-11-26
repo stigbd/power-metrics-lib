@@ -22,3 +22,9 @@ htmlcov
 
 # mkdocs site directory
 site/
+
+# mypy
+.mypy_cache/
+
+# rope
+.ropeproject

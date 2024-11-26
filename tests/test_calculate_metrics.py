@@ -1,4 +1,6 @@
-"""Test module the calculate_metrics.py module."""
+"""Unit test module for the calculate_metrics functions."""
+
+import pytest
 
 
 def test_calculate_average_power() -> None:
@@ -72,7 +74,7 @@ def test_calculate_duration() -> None:
     from power_metrics_lib.calculate_metrics import calculate_duration
 
     power_data = [100, 200, 300, 400, 500]
-    expected_result = {"seconds": 5, "hh:mm:ss": "0:00:05"}
+    expected_result = 5
 
     assert calculate_duration(power_data) == expected_result
 
@@ -85,3 +87,19 @@ def test_calculate_max_power() -> None:
     expected_result = 500
 
     assert calculate_max_power(power_data) == expected_result
+
+
+def test_calculate_normalized_power_when_number_of_power_data_is_lt_window_size() -> (
+    None
+):
+    """Should raise ValueError."""
+    from power_metrics_lib.calculate_metrics import calculate_normalized_power
+
+    power_data = [150, 156, 158]
+    window_size = 30
+
+    with pytest.raises(
+        ValueError,
+        match="The window size must be < the length of the power data",
+    ):
+        calculate_normalized_power(power_data, window_size=window_size)

@@ -15,36 +15,20 @@ File formats supported:
 ## Usage
 
 ```python
-from power_metrics_lib.file_parsers import parse_activity_file
-import power_metrics_lib.calculate_metrics as pm
 from power_metrics_lib.models import Activity
 
 file_path = "tests/files/file.fit"
-# Parse the .fit file:
-activity: Activity = parse_activity_file(file_path)
-
-# Calculate the average power:
-average_power: float = pm.calculate_average_power(activity.power)
-
-# Calculate the normalized power:
-normalized_power: float = pm.calculate_normalized_power(activity.power)
+# Create an activity from the .fit file:
+activity: Activity = Activity(file_path=file_path)
 
 # Set your FTP:
 ftp: int = 300
 
-# Calculate the intensity factor:
-intensity_factor: float = pm.calculate_intensity_factor(
-     normalized_power=normalized_power,
-     ftp=ftp,
-     )
+# Calculate all the metrics:
+activity.calculate_metrics(activity)
 
-# Calculate the training stress score:
-training_stress_score: float = pm.calculate_training_stress_score(
-     normalized_power=normalized_power,
-     intensity_factor=intensity_factor,
-     ftp=ftp,
-     duration=activity.duration,
-     )
+# Investigate the metrics:
+print(activity.metrics.average_power)
 ```
 ## Install the library into the virtual environment
 
@@ -60,8 +44,6 @@ Start the JupyterLab server:
 ```zsh
 % uv run --with jupyter jupyter lab
 ```
-
-Choose the kernel `power-metrics` to run the notebook.
 
 To install packages in a Jupyter notebook without persisting the change this project, use the following command:
 
