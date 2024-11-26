@@ -1,4 +1,4 @@
-# Documentation for the `Training Watt library`
+# Documentation for the `Power metrics library`
 
 ## Introduction
 

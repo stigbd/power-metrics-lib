@@ -2,15 +2,7 @@
 
 from dataclasses import dataclass
 
-from power_metrics_lib.calculate_metrics import (
-    calculate_average_power,
-    calculate_duration,
-    calculate_intensity_factor,
-    calculate_max_power,
-    calculate_normalized_power,
-    calculate_total_work,
-    calculate_training_stress_score,
-)
+import pandas as pd
 
 
 @dataclass
@@ -41,22 +33,15 @@ class Metrics:
             ftp: The functional threshold power.
 
         """
-        if timestamps and power:
-            self.duration = calculate_duration(timestamps)
-            self.average_power = calculate_average_power(power)
-            self.normalized_power = calculate_normalized_power(power)
-            self.max_power = calculate_max_power(power)
-
-        if timestamps and power and ftp:
-            self.intensity_factor = calculate_intensity_factor(
-                self.normalized_power, ftp
-            )
-            self.training_stress_score = calculate_training_stress_score(
-                self.normalized_power, self.intensity_factor, ftp, self.duration
-            )
-            self.total_work = calculate_total_work(power)
-        else:
-            return
+        self.calculate_duration(timestamps)
+        self.calculate_average_power(power)
+        self.calculate_normalized_power(power)
+        self.calculate_max_power(power)
+        self.calculate_intensity_factor(self.normalized_power, ftp)
+        self.calculate_training_stress_score(
+            self.normalized_power, self.intensity_factor, ftp, self.duration
+        )
+        self.calculate_total_work(power)
 
     duration: int = 0
     average_power: float = 0
@@ -65,3 +50,99 @@ class Metrics:
     intensity_factor: float = 0
     training_stress_score: float = 0
     total_work: int = 0
+
+    def calculate_average_power(self, power_data: list[int] | None) -> None:
+        """Calculate the average power from a list of power data.
+
+        Args:
+            power_data (list[int]): A list of power data.
+
+        """
+        if power_data:
+            self.average_power = sum(power_data) / len(power_data)
+
+    def calculate_normalized_power(
+        self, power_data: list[int] | None, window_size: int = 30
+    ) -> None:
+        """Calculate the normalized power from a list of power data.
+
+        Args:
+            power_data (list[int]): A list of power data.
+            window_size (int): The window size for the rolling mean.
+
+        """
+        if not power_data:
+            return
+
+        if len(power_data) < window_size:
+            return
+
+        series = pd.Series(power_data)
+        series = series.dropna()
+        windows = series.rolling(window_size)
+        power_30s = windows.mean()
+
+        self.normalized_power = round((((power_30s**4).mean()) ** 0.25), 0).item()
+
+    def calculate_intensity_factor(
+        self, normalized_power: float | None, ftp: float | None
+    ) -> None:
+        """Calculate the intensity factor from normalized power and FTP.
+
+        Args:
+            normalized_power (float): The normalized power.
+            ftp (float): The functional threshold power.
+
+        """
+        if normalized_power and ftp:
+            self.intensity_factor = normalized_power / ftp
+
+    def calculate_training_stress_score(
+        self,
+        normalized_power: float | None,
+        intensity_factor: float | None,
+        ftp: float | None,
+        duration: float | None,
+    ) -> None:
+        """Calculate the training stress score from normalized power, FTP and duration.
+
+        Args:
+            normalized_power (float): The normalized power.
+            intensity_factor (float): The intensity factor.
+            ftp (float): The functional threshold power.
+            duration (float): The duration in seconds.
+
+        """
+        if normalized_power and intensity_factor and ftp and duration:
+            self.training_stress_score = (
+                (normalized_power * intensity_factor * duration) / (ftp * 3600) * 100
+            )
+
+    def calculate_total_work(self, power_data: list[int] | None) -> None:
+        """Calculate the total work from power data.
+
+        Args:
+            power_data (list[int]): A list of power data.
+        """
+        if power_data:
+            self.total_work = sum(power_data)
+
+    def calculate_max_power(self, power_data: list[int] | None) -> None:
+        """Calculate the max power from power data.
+
+        Args:
+            power_data (list[int]): A list of power data.
+
+        """
+        if power_data:
+            self.max_power = max(power_data)
+
+    def calculate_duration(self, timestamps: list[int] | None) -> None:
+        """Calculate the duration from power data.
+
+        Args:
+            timestamps (list[int]): A list of timestamps.
+
+        """
+        if timestamps:
+            self.duration = len(timestamps)
