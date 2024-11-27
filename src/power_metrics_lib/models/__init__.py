@@ -15,13 +15,13 @@ from .workout import (
 
 __all__ = [
     "Activity",
-    "Workout",
     "Block",
-    "Ramp",
-    "Warmup",
     "Cooldown",
-    "SteadyState",
-    "Interval",
     "FreeRide",
+    "Interval",
     "Metrics",
+    "Ramp",
+    "SteadyState",
+    "Warmup",
+    "Workout",
 ]

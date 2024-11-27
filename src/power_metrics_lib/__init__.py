@@ -4,7 +4,7 @@ This package provides a set of functions to calculate power based metrics.
 
 
 Examples:
-    >>> from power_metrics_lib.models import Activity
+    >>> from power_metrics_lib import Activity
     >>>
     >>> file_path = "tests/files/file.fit"
     >>> # Parse the .fit file:
@@ -19,3 +19,7 @@ Examples:
     >>> assert activity.metrics.duration == 7023
     >>> assert activity.metrics.average_power == 187.02520290474158
 """
+
+from .models import Activity, Metrics, Workout
+
+__all__ = ["Activity", "Metrics", "Workout"]
