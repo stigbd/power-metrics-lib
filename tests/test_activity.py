@@ -50,3 +50,15 @@ def test_create_activity_with_non_positive_power() -> None:
 
     with pytest.raises(ValueError, match="Power data greater than or equal to zero"):
         Activity(power=[-1, 1, 2], ftp=ftp)
+
+
+def test_parse_activity_file_file_not_found() -> None:
+    """Test the parse_activity_file function."""
+    with pytest.raises(FileNotFoundError):
+        Activity(file_path="file_not_found.fit")
+
+
+def test_parse_activity_file_no_record_messages() -> None:
+    """Test the parse_activity_file function."""
+    with pytest.raises(ValueError, match="No record messages found in the .fit file."):
+        Activity(file_path="tests/files/zwift_workout.fit")

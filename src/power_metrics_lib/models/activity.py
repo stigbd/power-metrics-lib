@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from power_metrics_lib.file_parsers import parse_activity_file
+from garmin_fit_sdk import Decoder, Stream
 
 from .metrics import Metrics
 
@@ -37,12 +37,7 @@ class Activity:
         self.metrics = Metrics()
 
         if file_path:
-            record_messages = parse_activity_file(file_path)
-            for timestamp in [m["timestamp"] for m in record_messages]:
-                self.timestamps.append(int(timestamp))
-
-            for p in [m["power"] for m in record_messages]:
-                self.power.append(int(p))
+            self.parse_activity_file(file_path)
 
         # Validate the timestamps and power data:
         # all timestamps must be strictly positive:
@@ -68,3 +63,37 @@ class Activity:
 
         """
         self.metrics = Metrics(self.timestamps, self.power, ftp)
+
+    def parse_activity_file(self, file_path: str) -> None:
+        """Parse a .fit file and return a list of dicts.
+
+        Args:
+            file_path (str): The path to the .fit file.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            ValueError: If there are any errors parsing the .fit file.
+        """
+        try:
+            stream = Stream.from_file(file_path)
+        except FileNotFoundError as e:
+            msg = f"File not found: {file_path}"
+            raise FileNotFoundError(msg) from e
+
+        decoder = Decoder(stream)
+        messages, errors = decoder.read(
+            convert_datetimes_to_dates=False,
+            convert_types_to_strings=True,
+        )
+
+        if len(errors) > 0:  # pragma: no cover
+            msg = "\n".join(errors)
+            raise ValueError(msg) from None
+
+        if "record_mesgs" not in messages:
+            msg = "No record messages found in the .fit file."
+            raise ValueError(msg) from None
+
+        for message in messages["record_mesgs"]:
+            self.timestamps.append(int(message["timestamp"]))
+            self.power.append(int(message["power"]))
