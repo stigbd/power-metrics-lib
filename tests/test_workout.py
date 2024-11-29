@@ -9,48 +9,77 @@ from power_metrics_lib.models.workout import (
     Interval,
     Ramp,
     SteadyState,
+    UnsupportedFileTypeError,
     Warmup,
     Workout,
 )
 
+EXPECTED_NO_OF_BLOCKS = 10
+FTP = 200
+EXPECTED_DURATION = 3630
+EXPECTED_AVERAGE_POWER = 140
+EXPECTED_MAX_POWER = 300
+EXPECTED_NORMALIZED_POWER = 181
+EXPECTED_INTENSITY_FACTOR = 0.905
+EXPECTED_TSS = 83
+EXPECTED_TOTAL_WORK = 508482
 
-def test_create_workout_from_file() -> None:
-    """Should create a workout based on a file and generate all blocks correctly."""
+
+def test_create_workout_from_file_no_ftp() -> None:
+    """Shold create a workout with only blocks."""
     test_file = "tests/files/zwift_workout.zwo"
-    expected_no_of_blocks = 10
 
     workout = Workout(file_path=test_file)
 
     assert isinstance(workout, Workout)
-    assert expected_no_of_blocks == len(workout.blocks)
+    assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
+    assert workout.timestamps == []
+    assert workout.power == []
+    assert workout.metrics.duration == 0
+    assert workout.metrics.average_power == 0
+    assert workout.metrics.normalized_power == 0
+    assert workout.metrics.max_power == 0
+    assert workout.metrics.intensity_factor == 0
+    assert workout.metrics.training_stress_score == 0
+    assert workout.metrics.total_work == 0
+
+
+def test_create_workout_from_zwo_file() -> None:
+    """Should create a workout based on a file and generate all blocks correctly."""
+    test_file = "tests/files/zwift_workout.zwo"
+
+    workout = Workout(file_path=test_file, ftp=FTP)
+
+    assert isinstance(workout, Workout)
+    assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
+    assert len(workout.timestamps) == EXPECTED_DURATION
+    assert len(workout.power) == len(workout.timestamps)
+    assert workout.metrics.duration == EXPECTED_DURATION
+    assert round(workout.metrics.average_power, 0) == EXPECTED_AVERAGE_POWER
+    assert workout.metrics.max_power == EXPECTED_MAX_POWER
+    assert round(workout.metrics.normalized_power, 0) == EXPECTED_NORMALIZED_POWER
+    assert round(workout.metrics.intensity_factor, 3) == EXPECTED_INTENSITY_FACTOR
+    assert round(workout.metrics.training_stress_score, 0) == EXPECTED_TSS
+    assert workout.metrics.total_work == EXPECTED_TOTAL_WORK
 
 
 def test_create_workout_from_file_with_ftp() -> None:
     """Should create a workout based on a file and generate all blocks correctly."""
     test_file = "tests/files/zwift_workout.zwo"
-    expected_no_of_blocks = 10
-    ftp = 200
-    expected_duration = 3630
-    expected_average_power = 140
-    expected_max_power = 300
-    expected_normalized_power = 181
-    expected_intensity_factor = 0.905
-    expected_tss = 83
-    expected_total_work = 508482
 
-    workout = Workout(file_path=test_file, ftp=ftp)
+    workout = Workout(file_path=test_file, ftp=FTP)
 
     assert isinstance(workout, Workout)
-    assert expected_no_of_blocks == len(workout.blocks)
-    assert expected_duration == len(workout.timestamps)
+    assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
+    assert len(workout.timestamps) == EXPECTED_DURATION
     assert len(workout.power) == len(workout.timestamps)
-    assert expected_duration == workout.metrics.duration
-    assert expected_average_power == round(workout.metrics.average_power, 0)
-    assert expected_max_power == workout.metrics.max_power
-    assert expected_normalized_power == round(workout.metrics.normalized_power, 0)
-    assert expected_intensity_factor == round(workout.metrics.intensity_factor, 3)
-    assert expected_tss == round(workout.metrics.training_stress_score, 0)
-    assert expected_total_work == workout.metrics.total_work
+    assert workout.metrics.duration == EXPECTED_DURATION
+    assert round(workout.metrics.average_power, 0) == EXPECTED_AVERAGE_POWER
+    assert workout.metrics.max_power == EXPECTED_MAX_POWER
+    assert round(workout.metrics.normalized_power, 0) == EXPECTED_NORMALIZED_POWER
+    assert round(workout.metrics.intensity_factor, 3) == EXPECTED_INTENSITY_FACTOR
+    assert round(workout.metrics.training_stress_score, 0) == EXPECTED_TSS
+    assert workout.metrics.total_work == EXPECTED_TOTAL_WORK
 
 
 def test_create_workout() -> None:
@@ -104,6 +133,32 @@ def test_create_workout_with_abstract_block() -> None:
     """Should raise a TypeError for an invalid block type."""
     with pytest.raises(TypeError, match="Invalid block type"):
         Workout(blocks=[Block(duration=300)], ftp=200)
+
+
+def test_create_workout_with_invalid_block() -> None:
+    """Should raise a TypeError for an invalid block type."""
+    test_file = "tests/files/zwift_workout_unknown_block_type.zwo"
+
+    with pytest.raises(ValueError, match="Unknown block type"):
+        Workout(file_path=test_file)
+
+
+def test_create_workout_with_file_not_found() -> None:
+    """Should raise a FileNotFoundError."""
+    test_file = "file_that_does_not_exist.zwo"
+
+    with pytest.raises(
+        FileNotFoundError, match="File not found: file_that_does_not_exist.zwo"
+    ):
+        Workout(file_path=test_file)
+
+
+def test_create_workout_with_unsupported_file_format() -> None:
+    """Should raise unsupported file format error."""
+    test_file = "tests/files/unsupported_file_format.txt"
+
+    with pytest.raises(UnsupportedFileTypeError, match="Unsupported file type: txt"):
+        Workout(file_path=test_file)
 
 
 # Helper functions:

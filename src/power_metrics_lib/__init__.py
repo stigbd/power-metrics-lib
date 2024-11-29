@@ -6,7 +6,7 @@ This package provides a set of functions to calculate power based metrics.
 Examples:
     >>> from power_metrics_lib import Activity
     >>>
-    >>> file_path = "tests/files/file.fit"
+    >>> file_path = "tests/files/activity.fit"
     >>> # Parse the .fit file:
     >>> activity: Activity = Activity(file_path)
     >>>

@@ -9,6 +9,7 @@ from .workout import (
     Interval,
     Ramp,
     SteadyState,
+    UnsupportedFileTypeError,
     Warmup,
     Workout,
 )
@@ -22,6 +23,7 @@ __all__ = [
     "Metrics",
     "Ramp",
     "SteadyState",
+    "UnsupportedFileTypeError",
     "Warmup",
     "Workout",
 ]

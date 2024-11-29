@@ -1,11 +1,29 @@
-"""Module for the workout model."""
+"""Module for the workout model.
+
+Examples:
+    >>> from power_metrics_lib import Workout
+    >>>
+    >>> # Set your FTP:
+    >>> ftp = 300
+    >>> # Create a workout from the a .zwo file:
+    >>> file_path = "tests/files/zwift_workout.zwo"
+    >>> workout = Workout(file_path=file_path, ftp=ftp)
+    >>>
+    >>> # Check the metrics:
+    >>> assert 3630 == workout.metrics.duration
+    >>> assert 210 == round(workout.metrics.average_power, 0)
+"""
 
 from abc import ABC
 from dataclasses import dataclass, field
 
-from power_metrics_lib.file_parsers import parse_workout_file
+from defusedxml.ElementTree import parse
 
 from .activity import Activity
+
+
+class UnsupportedFileTypeError(Exception):
+    """Unsupported file type."""
 
 
 @dataclass
@@ -13,7 +31,7 @@ class Block(ABC):
     """Model for a block.
 
     Attributes:
-        duration: The duration of the block.
+        duration (int): The duration of the block.
     """
 
     duration: int
@@ -24,8 +42,8 @@ class Ramp(Block):
     """Model for a ramp block.
 
     Attributes:
-        start_power: The start power.
-        end_power: The end power.
+        start_power (float): The start power.
+        end_power (float): The end power.
     """
 
     start_power: float
@@ -47,7 +65,7 @@ class SteadyState(Block):
     """Model for a steady state block.
 
     Attributes:
-        power: The power.
+        power (float): The power.
     """
 
     power: float
@@ -58,11 +76,11 @@ class Interval(Block):
     """Model for an interval block.
 
     Attributes:
-        repeat: The number of times to repeat the interval.
-        on_power: The power during the work interval.
-        on_duration: The duration of the work interval.
-        off_power: The power during the rest interval.
-        off_duration: The duration of the rest interval.
+        repeat (int): The number of times to repeat the interval.
+        on_power (float): The power during the work interval.
+        on_duration (int): The duration of the work interval.
+        off_power (float): The power during the rest interval.
+        off_duration (int): The duration of the rest interval.
     """
 
     repeat: int
@@ -87,10 +105,10 @@ class Workout(Activity):
     """Model for a workout.
 
     Attributes:
-        blocks: The blocks.
+        blocks (list[Block]): The blocks.
     """
 
-    def __init__(  # noqa: C901
+    def __init__(
         self,
         file_path: str | None = None,
         blocks: list[Block] | None = None,
@@ -104,24 +122,7 @@ class Workout(Activity):
             self.blocks = blocks
 
         if file_path is not None:
-            _blocks: list[dict] = parse_workout_file(file_path)
-
-            for block in _blocks:
-                if "SteadyState" in block:
-                    self.blocks.append(SteadyState(**block["SteadyState"]))
-                elif "Warmup" in block:
-                    self.blocks.append(Warmup(**block["Warmup"]))
-                elif "Cooldown" in block:
-                    self.blocks.append(Cooldown(**block["Cooldown"]))
-                elif "Interval" in block:
-                    self.blocks.append(Interval(**block["Interval"]))
-                elif "Ramp" in block:
-                    self.blocks.append(Ramp(**block["Ramp"]))
-                elif "FreeRide" in block:
-                    self.blocks.append(FreeRide(**block["FreeRide"]))
-                else:  # pragma: no cover
-                    msg = "Invalid block type."
-                    raise TypeError(msg)
+            self.parse_workout_file(file_path)
 
         if ftp is not None:
             self.create_activity_from_workout(ftp)
@@ -129,7 +130,7 @@ class Workout(Activity):
 
     blocks: list[Block]
 
-    def create_activity_from_workout(self, ftp: int) -> None:  # noqa: C901
+    def create_activity_from_workout(self, ftp: int) -> None: # noqa: C901
         """Converts a workout to an activity.
 
         Args:
@@ -173,3 +174,89 @@ class Workout(Activity):
             else:
                 msg = f"Invalid block type: {type(block)}"
                 raise TypeError(msg) from None
+
+    def parse_workout_file(self, file_path: str) -> None:
+        """Parse a .zwo file and return a workout object.
+
+        Args:
+            file_path: The path to the .zwo file.
+
+        Returns:
+            Workout: the workout object.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            ValueError: If there are any errors parsing the .zwo file.
+
+        """
+        if file_path.endswith(".zwo"):
+            pass
+        else:
+            file_type = file_path.split(".")[-1]
+            msg = f"Unsupported file type: {file_type}"
+            raise UnsupportedFileTypeError(msg)
+
+        try:
+            tree = parse(file_path)
+        except FileNotFoundError as e:
+            msg = f"File not found: {file_path}"
+            raise FileNotFoundError(msg) from e
+
+        root = tree.getroot()
+        blocks = root.findall("./workout/*")
+
+        for block in blocks:
+            if block.tag == "SteadyState":
+                power = float(block.attrib["Power"])
+                duration = int(round(float(block.attrib["Duration"])))
+                self.blocks.append(SteadyState(power=power, duration=duration))
+            elif block.tag in ("Cooldown", "Warmup", "Ramp"):
+                power_low = float(block.attrib["PowerLow"])
+                power_high = float(block.attrib["PowerHigh"])
+                duration = int(round(float(block.attrib["Duration"])))
+                if block.tag == "Cooldown":
+                    self.blocks.append(
+                        Cooldown(
+                            duration=duration,
+                            start_power=power_low,
+                            end_power=power_high,
+                        )
+                    )
+                elif block.tag == "Warmup":
+                    self.blocks.append(
+                        Warmup(
+                            duration=duration,
+                            start_power=power_low,
+                            end_power=power_high,
+                        )
+                    )
+                else:
+                    # "Ramp"
+                    self.blocks.append(
+                        Ramp(
+                            duration=duration,
+                            start_power=power_low,
+                            end_power=power_high,
+                        )
+                    )
+            elif block.tag == "IntervalsT":
+                repeat = int(block.attrib["Repeat"])
+                on_power = float(block.attrib["OnPower"])
+                off_power = float(block.attrib["OffPower"])
+                on_duration = int(round(float(block.attrib["OnDuration"])))
+                off_duration = int(round(float(block.attrib["OffDuration"])))
+                self.blocks.append(
+                    Interval(
+                        repeat=repeat,
+                        on_power=on_power,
+                        off_power=off_power,
+                        on_duration=on_duration,
+                        off_duration=off_duration,
+                    )
+                )
+            elif block.tag == "FreeRide":
+                duration = int(round(float(block.attrib["Duration"])))
+                self.blocks.append(FreeRide(duration))
+            else:
+                msg = f"Unknown block type: {block.tag}"
+                raise ValueError(msg) from None

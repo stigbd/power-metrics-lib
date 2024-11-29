@@ -17,7 +17,7 @@ File formats supported:
 ```python
 from power_metrics_lib import Activity
 
-file_path = "tests/files/file.fit"
+file_path = "tests/files/activity.fit"
 # Create an activity from the .fit file:
 activity: Activity = Activity(file_path=file_path)
 
