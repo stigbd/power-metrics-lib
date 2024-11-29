@@ -8,4 +8,3 @@
       members:
       - Activity
       - Workout
-      - Metrics

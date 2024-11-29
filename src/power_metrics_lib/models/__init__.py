@@ -1,7 +1,6 @@
 """Package for the Activity class."""
 
 from .activity import Activity
-from .metrics import Metrics
 from .workout import (
     Block,
     Cooldown,
@@ -20,7 +19,6 @@ __all__ = [
     "Cooldown",
     "FreeRide",
     "Interval",
-    "Metrics",
     "Ramp",
     "SteadyState",
     "UnsupportedFileTypeError",

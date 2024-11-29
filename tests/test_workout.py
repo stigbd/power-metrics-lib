@@ -23,6 +23,7 @@ EXPECTED_NORMALIZED_POWER = 181
 EXPECTED_INTENSITY_FACTOR = 0.905
 EXPECTED_TSS = 83
 EXPECTED_TOTAL_WORK = 508482
+EXPECTED_VARIABILITY_INDEX = 1.29
 
 
 def test_create_workout_from_file_no_ftp() -> None:
@@ -35,13 +36,13 @@ def test_create_workout_from_file_no_ftp() -> None:
     assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
     assert workout.timestamps == []
     assert workout.power == []
-    assert workout.metrics.duration == 0
-    assert workout.metrics.average_power == 0
-    assert workout.metrics.normalized_power == 0
-    assert workout.metrics.max_power == 0
-    assert workout.metrics.intensity_factor == 0
-    assert workout.metrics.training_stress_score == 0
-    assert workout.metrics.total_work == 0
+    assert workout.duration == 0
+    assert workout.average_power == 0
+    assert workout.normalized_power == 0
+    assert workout.max_power == 0
+    assert workout.intensity_factor == 0
+    assert workout.training_stress_score == 0
+    assert workout.total_work == 0
 
 
 def test_create_workout_from_zwo_file() -> None:
@@ -54,32 +55,15 @@ def test_create_workout_from_zwo_file() -> None:
     assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
     assert len(workout.timestamps) == EXPECTED_DURATION
     assert len(workout.power) == len(workout.timestamps)
-    assert workout.metrics.duration == EXPECTED_DURATION
-    assert round(workout.metrics.average_power, 0) == EXPECTED_AVERAGE_POWER
-    assert workout.metrics.max_power == EXPECTED_MAX_POWER
-    assert round(workout.metrics.normalized_power, 0) == EXPECTED_NORMALIZED_POWER
-    assert round(workout.metrics.intensity_factor, 3) == EXPECTED_INTENSITY_FACTOR
-    assert round(workout.metrics.training_stress_score, 0) == EXPECTED_TSS
-    assert workout.metrics.total_work == EXPECTED_TOTAL_WORK
-
-
-def test_create_workout_from_file_with_ftp() -> None:
-    """Should create a workout based on a file and generate all blocks correctly."""
-    test_file = "tests/files/zwift_workout.zwo"
-
-    workout = Workout(file_path=test_file, ftp=FTP)
-
-    assert isinstance(workout, Workout)
-    assert len(workout.blocks) == EXPECTED_NO_OF_BLOCKS
-    assert len(workout.timestamps) == EXPECTED_DURATION
-    assert len(workout.power) == len(workout.timestamps)
-    assert workout.metrics.duration == EXPECTED_DURATION
-    assert round(workout.metrics.average_power, 0) == EXPECTED_AVERAGE_POWER
-    assert workout.metrics.max_power == EXPECTED_MAX_POWER
-    assert round(workout.metrics.normalized_power, 0) == EXPECTED_NORMALIZED_POWER
-    assert round(workout.metrics.intensity_factor, 3) == EXPECTED_INTENSITY_FACTOR
-    assert round(workout.metrics.training_stress_score, 0) == EXPECTED_TSS
-    assert workout.metrics.total_work == EXPECTED_TOTAL_WORK
+    assert workout.duration == EXPECTED_DURATION
+    assert round(workout.average_power, 0) == EXPECTED_AVERAGE_POWER
+    assert workout.max_power == EXPECTED_MAX_POWER
+    assert round(workout.normalized_power, 0) == EXPECTED_NORMALIZED_POWER
+    assert round(workout.intensity_factor, 3) == EXPECTED_INTENSITY_FACTOR
+    assert round(workout.training_stress_score, 0) == EXPECTED_TSS
+    assert workout.total_work == EXPECTED_TOTAL_WORK
+    assert workout.ftp == FTP
+    assert workout.variability_index == EXPECTED_VARIABILITY_INDEX
 
 
 def test_create_workout() -> None:
