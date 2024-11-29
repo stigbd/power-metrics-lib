@@ -18,7 +18,7 @@ def test_create_activity_from_file() -> None:
     expected_training_stress_score = 145.76608733122666
     expected_total_work = 1313478
 
-    activity = Activity(file_path="tests/files/file.fit", ftp=ftp)
+    activity = Activity(file_path="tests/files/activity.fit", ftp=ftp)
 
     assert isinstance(activity, Activity)
 

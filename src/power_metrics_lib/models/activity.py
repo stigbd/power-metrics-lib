@@ -1,4 +1,22 @@
-"""Module for the activity model."""
+"""Module for the activity model.
+
+Examples:
+    >>> from power_metrics_lib import Activity
+    >>>
+    >>> # Create an activity from the a .fit file:
+    >>> file_path = "tests/files/activity.fit"
+    >>> activity = Activity(file_path)
+    >>>
+    >>> # Set your FTP:
+    >>> ftp: int = 300
+    >>>
+    >>> # Calculate all the metrics:
+    >>> activity.calculate_metrics(ftp)
+    >>>
+    >>> # Check the metrics:
+    >>> assert activity.metrics.duration == 7023
+    >>> assert activity.metrics.average_power == 187.02520290474158
+"""
 
 from dataclasses import dataclass
 
@@ -12,8 +30,8 @@ class Activity:
     """Model for an activity.
 
     Attributes:
-        timestamps: The timestamps.
-        power: The power data.
+        timestamps (list[int]): The timestamps.
+        power (list[int]): The power data.
 
     """
 
@@ -68,7 +86,7 @@ class Activity:
         """Parse a .fit file and return a list of dicts.
 
         Args:
-            file_path (str): The path to the .fit file.
+            file_path: The path to the .fit file.
 
         Raises:
             FileNotFoundError: If the file does not exist.
