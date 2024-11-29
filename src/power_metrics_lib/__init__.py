@@ -1,25 +1,9 @@
 """Package for the power-metrics-lib library.
 
-This package provides a set of functions to calculate power based metrics.
-
-
-Examples:
-    >>> from power_metrics_lib import Activity
-    >>>
-    >>> file_path = "tests/files/activity.fit"
-    >>> # Parse the .fit file:
-    >>> activity: Activity = Activity(file_path)
-    >>>
-    >>> # Set your FTP:
-    >>> ftp: int = 300
-    >>>
-    >>> # Calculate all the metrics:
-    >>> activity.calculate_metrics(ftp)
-    >>> # Check the metrics:
-    >>> assert activity.metrics.duration == 7023
-    >>> assert activity.metrics.average_power == 187.02520290474158
+This library provides a set of functions to calculate power based metrics from
+either an activity file or a workout.
 """
 
-from .models import Activity, Metrics, Workout
+from .models import Activity, Workout
 
-__all__ = ["Activity", "Metrics", "Workout"]
+__all__ = ["Activity", "Workout"]

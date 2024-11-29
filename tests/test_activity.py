@@ -17,6 +17,7 @@ def test_create_activity_from_file() -> None:
     expected_intensity_factor = 0.864406779661017
     expected_training_stress_score = 145.76608733122666
     expected_total_work = 1313478
+    expected_variability_index = 1.0907620835674445
 
     activity = Activity(file_path="tests/files/activity.fit", ftp=ftp)
 
@@ -27,13 +28,14 @@ def test_create_activity_from_file() -> None:
     assert expected_power_first_record == activity.power[0]
 
     # Check that all the metrics are generated correctly
-    assert expected_duration == activity.metrics.duration
-    assert expected_avgerage_power == activity.metrics.average_power
-    assert expected_normalized_power == activity.metrics.normalized_power
-    assert expected_max_power == activity.metrics.max_power
-    assert expected_intensity_factor == activity.metrics.intensity_factor
-    assert expected_training_stress_score == activity.metrics.training_stress_score
-    assert expected_total_work == activity.metrics.total_work
+    assert expected_duration == activity.duration
+    assert expected_avgerage_power == activity.average_power
+    assert expected_normalized_power == activity.normalized_power
+    assert expected_max_power == activity.max_power
+    assert expected_intensity_factor == activity.intensity_factor
+    assert expected_training_stress_score == activity.training_stress_score
+    assert expected_total_work == activity.total_work
+    assert expected_variability_index == activity.variability_index
 
 
 def test_create_activity_with_non_positive_timestamps() -> None:
@@ -62,3 +64,9 @@ def test_parse_activity_file_no_record_messages() -> None:
     """Test the parse_activity_file function."""
     with pytest.raises(ValueError, match="No record messages found in the .fit file."):
         Activity(file_path="tests/files/zwift_workout.fit")
+
+
+def test_create_activity_with_window_size_greater_than_power_data() -> None:
+    """Should result in 0 normalized power."""
+    activity = Activity(power=[100, 200, 300], window_size=4)
+    assert activity.normalized_power == 0

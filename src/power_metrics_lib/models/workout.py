@@ -4,14 +4,17 @@ Examples:
     >>> from power_metrics_lib import Workout
     >>>
     >>> # Set your FTP:
-    >>> ftp = 300
+    >>> ftp = 200
+    >>>
     >>> # Create a workout from the a .zwo file:
     >>> file_path = "tests/files/zwift_workout.zwo"
+    >>>
+    >>> # Create a workout object:
     >>> workout = Workout(file_path=file_path, ftp=ftp)
     >>>
     >>> # Check the metrics:
-    >>> assert 3630 == workout.metrics.duration
-    >>> assert 210 == round(workout.metrics.average_power, 0)
+    >>> assert 3360 == workout.duration
+    >>> assert 127 == round(workout.average_power, 0)
 """
 
 from abc import ABC
@@ -115,7 +118,7 @@ class Workout(Activity):
         ftp: int | None = None,
     ) -> None:
         """Initialize the workout."""
-        super().__init__()
+        super().__init__(ftp=ftp)
 
         self.blocks = []
         if blocks is not None:
@@ -126,11 +129,11 @@ class Workout(Activity):
 
         if ftp is not None:
             self.create_activity_from_workout(ftp)
-            super().calculate_metrics(ftp)
+            super().calculate_metrics()
 
-    blocks: list[Block]
+    blocks: list[Block] = field(default_factory=list)
 
-    def create_activity_from_workout(self, ftp: int) -> None: # noqa: C901
+    def create_activity_from_workout(self, ftp: int) -> None:  # noqa: C901
         """Converts a workout to an activity.
 
         Args:
@@ -161,7 +164,7 @@ class Workout(Activity):
                     timestamp += 1
             elif isinstance(block, Interval):
                 for _ in range(block.repeat):
-                    for _ in range(block.off_duration):
+                    for _ in range(block.on_duration):
                         self.timestamps.append(timestamp)
                         self.power.append(round(block.on_power * ftp))
                         timestamp += 1

@@ -17,18 +17,17 @@ File formats supported:
 ```python
 from power_metrics_lib import Activity
 
-file_path = "tests/files/activity.fit"
-# Create an activity from the .fit file:
-activity: Activity = Activity(file_path=file_path)
-
 # Set your FTP:
 ftp: int = 300
+# Create an activity from the .fit file:
+file_path = "tests/files/activity.fit"
 
-# Calculate all the metrics:
-activity.calculate_metrics(ftp=ftp)
+# Create an activity object:
+activity = Activity(file_path=file_path, ftp=ftp)
 
 # Investigate the metrics:
-print(activity.metrics)
+print(activity.average_power)
+print(activity.normalized_power)
 ```
 ## Install the library into the virtual environment
 
