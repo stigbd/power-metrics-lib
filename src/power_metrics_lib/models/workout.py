@@ -4,7 +4,7 @@ Examples:
     >>> from power_metrics_lib import Workout
     >>>
     >>> # Set your FTP:
-    >>> ftp = 300
+    >>> ftp = 200
     >>>
     >>> # Create a workout from the a .zwo file:
     >>> file_path = "tests/files/zwift_workout.zwo"
@@ -13,8 +13,8 @@ Examples:
     >>> workout = Workout(file_path=file_path, ftp=ftp)
     >>>
     >>> # Check the metrics:
-    >>> assert 3630 == workout.duration
-    >>> assert 210 == round(workout.average_power, 0)
+    >>> assert 3360 == workout.duration
+    >>> assert 127 == round(workout.average_power, 0)
 """
 
 from abc import ABC

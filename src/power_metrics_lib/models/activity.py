@@ -7,7 +7,7 @@ Examples:
     >>> file_path = "tests/files/activity.fit"
     >>>
     >>> # Set your FTP:
-    >>> ftp: int = 300
+    >>> ftp: int = 226
     >>>
     >>> # Create an activity object:
     >>> activity = Activity(file_path, ftp=ftp)
