@@ -393,7 +393,7 @@ wheels = [
 
 [[package]]
 name = "power-metrics-lib"
-version = "1.0.2"
+version = "1.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "defusedxml" },

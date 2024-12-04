@@ -78,5 +78,6 @@ lint = "uv run ruff check --fix"
 pyright = "uv run pyright"
 check-deps = "uv run deptry ."
 tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov"
-xdoctest = "uv run xdoctest --quiet -m src/power_metrics_lib "
+xdoctest = "uv run xdoctest --quiet -m src/power_metrics_lib"
+serve-docs = "uv run mkdocs serve"
 release = ["lint", "pyright", "check-deps", "tests", "xdoctest"]
