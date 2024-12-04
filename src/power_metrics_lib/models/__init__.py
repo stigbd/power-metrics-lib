@@ -1,6 +1,7 @@
 """Package for the Activity class."""
 
 from .activity import Activity
+from .athlete import Athlete
 from .workout import (
     Block,
     Cooldown,
@@ -15,6 +16,7 @@ from .workout import (
 
 __all__ = [
     "Activity",
+    "Athlete",
     "Block",
     "Cooldown",
     "FreeRide",

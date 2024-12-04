@@ -6,5 +6,6 @@
       include-members: true
       show-inheritance: true
       members:
+      - Athlete
       - Activity
       - Workout
