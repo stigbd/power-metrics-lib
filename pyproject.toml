@@ -24,6 +24,7 @@ dev-dependencies = [
     "pytest>=8.3.3",
     "ruff>=0.7.3",
     "xdoctest>=1.2.0",
+    "nbdime>=4.0.2",
 ]
 
 [tool.ruff.lint]
