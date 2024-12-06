@@ -17,8 +17,10 @@ Examples:
     >>> assert activity.average_power == 187.02520290474158
 """
 
-from dataclasses import dataclass
+import logging
+from dataclasses import dataclass, field
 
+import numpy as np
 import pandas as pd
 from garmin_fit_sdk import Decoder, Stream
 
@@ -30,7 +32,18 @@ class Activity:
     Attributes:
         timestamps (list[int]): The timestamps.
         power (list[int]): The power data.
-
+        ftp (int): The functional threshold power.
+        window_size (int): The window size for the normalized power calculation.
+        duration (int): The duration of the activity.
+        average_power (float): The average power.
+        normalized_power (float): The normalized power.
+        max_power (int): The max power.
+        intensity_factor (float): The intensity factor.
+        training_stress_score (float): The training stress score.
+        total_work (int): The total work.
+        variability_index (float): The variability index.
+        power_duration_curve (list[int]): The power duration curve.
+        power_profile (dict[int, int]): The power profile for a set of duration.
     """
 
     DEFAULT_WINDOW_SIZE = 30
@@ -85,6 +98,8 @@ class Activity:
     training_stress_score: float = 0
     total_work: int = 0
     variability_index: float = 0
+    power_duration_curve: list[int] = field(default_factory=list)
+    power_profile: dict[int, int] = field(default_factory=dict)
 
     def calculate_metrics(self) -> None:
         """Calculate the metrics."""
@@ -96,6 +111,8 @@ class Activity:
         self.calculate_training_stress_score()
         self.calculate_total_work()
         self.calculate_variability_index()
+        self.calculate_power_duration_curve()
+        self.calculate_power_profile()
 
     def parse_activity_file(self, file_path: str) -> None:
         """Parse a .fit file and return a list of dicts.
@@ -129,7 +146,13 @@ class Activity:
 
         for message in messages["record_mesgs"]:
             self.timestamps.append(int(message["timestamp"]))
-            self.power.append(int(message["power"]))
+            # Patch missing power data with 0:
+            if "power" not in message:  # pragma: no cover
+                msg = f"{message["timestamp"]}: No power data in record message."
+                logging.warning(msg)
+                self.power.append(0)
+            else:
+                self.power.append(int(message["power"]))
 
     def calculate_average_power(self) -> None:
         """Calculate the average power from a list of power data."""
@@ -189,3 +212,58 @@ class Activity:
         """Calculate the variablity index."""
         if self.normalized_power and self.average_power:
             self.variability_index = self.normalized_power / self.average_power
+
+    def calculate_power_duration_curve(self) -> None:
+        """Calculate the power duration curve.
+
+        Calculates the max power over every duration.
+
+        """
+        self.power_duration_curve = []
+
+        if not self.power:
+            return
+
+        # The first entry is simply the max power:
+        self.power_duration_curve.append(max(self.power))
+        # The reste is a the max of the moving average pr duration:
+        for i in range(1, len(self.power)):
+            max_power = self.calculate_max_power_for_duration(i)
+            self.power_duration_curve.append(max_power)
+
+    def calculate_max_power_for_duration(self, duration: int) -> int:
+        """Calculate the moving average of the power data for given duration.
+
+        Args:
+            duration: The duration in seconds.
+
+        Returns:
+            The max power for the given duration.
+        """
+        series = pd.Series(self.power)
+        series = series.dropna()
+        windows = series.rolling(duration)
+
+        mean = windows.mean()
+        max_power = mean.max()
+
+        if type(max_power) is not np.float64:  # pragma: no cover
+            msg = "Max power is not a float."
+            raise ValueError(msg) from None
+
+        return round(max_power)
+
+    def calculate_power_profile(self) -> None:
+        """Calculate the power profile.
+
+        Durations: 5s, 1min, 5min, 20min, 60min.
+        """
+        self.power_profile = {}
+
+        if self.power_duration_curve is None:  # pragma: no cover
+            return
+
+        durations = [5, 1 * 60, 5 * 60, 20 * 60, 60 * 60]
+        for d in durations:
+            if d <= self.duration:
+                self.power_profile[d] = self.power_duration_curve[d - 1]

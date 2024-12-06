@@ -36,6 +36,16 @@ def test_create_activity_from_file() -> None:
     assert expected_training_stress_score == activity.training_stress_score
     assert expected_total_work == activity.total_work
     assert expected_variability_index == activity.variability_index
+    assert activity.window_size == Activity.DEFAULT_WINDOW_SIZE
+    assert len(activity.power_duration_curve) == len(activity.timestamps)
+    assert activity.power_duration_curve[0] == activity.max_power
+    assert activity.power_profile == {
+        5: activity.power_duration_curve[5 - 1],
+        1 * 60: activity.power_duration_curve[(1 * 60) - 1],
+        5 * 60: activity.power_duration_curve[(5 * 60) - 1],
+        20 * 60: activity.power_duration_curve[(20 * 60) - 1],
+        60 * 60: activity.power_duration_curve[(60 * 60) - 1],
+    }
 
 
 def test_create_activity_with_non_positive_timestamps() -> None:

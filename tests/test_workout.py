@@ -64,6 +64,16 @@ def test_create_workout_from_zwo_file() -> None:
     assert workout.total_work == EXPECTED_TOTAL_WORK
     assert workout.ftp == FTP
     assert workout.variability_index == EXPECTED_VARIABILITY_INDEX
+    assert len(workout.power_duration_curve) == len(workout.timestamps)
+    assert workout.power_duration_curve[0] == workout.max_power
+    assert workout.power_profile == {
+        5: workout.power_duration_curve[5 - 1],
+        1 * 60: workout.power_duration_curve[(1 * 60) - 1],
+        5 * 60: workout.power_duration_curve[(5 * 60) - 1],
+        20 * 60: workout.power_duration_curve[(20 * 60) - 1],
+    }
+    # The workout duration is < 60 minutes, so the 60 minute power is not included:
+    assert 60 * 60 not in workout.power_profile
 
 
 def test_create_workout() -> None:

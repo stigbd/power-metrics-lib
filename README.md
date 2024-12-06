@@ -60,5 +60,9 @@ To install packages in a Jupyter notebook without persisting the change this pro
 - [Zwift Workout Editor](https://www.zwiftworkout.com/)
 - [Test file on Strava](https://www.strava.com/activities/12868899187)
 
+- Power profiling:
+  - [Creating Your Power Profile](https://www.trainingpeaks.com/blog/power-profiling/)
+  - [Cycling Power Profiling Explained](https://www.highnorth.co.uk/articles/power-profiling-cycling)
+
 - Notebooks:
   - [Using uv with Jupyter](https://docs.astral.sh/uv/guides/integration/jupyter/)
