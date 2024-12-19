@@ -75,11 +75,11 @@ ignore_notebooks = true
 known_first_party = ["power_metrics_lib"]
 
 [tool.poe.tasks]
-format = "uv run ruff format"
-lint = "uv run ruff check --fix"
-pyright = "uv run pyright"
-check-deps = "uv run deptry ."
-tests = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov"
-xdoctest = "uv run xdoctest --quiet -m src/power_metrics_lib"
-serve-docs = "uv run mkdocs serve"
-release = ["lint", "pyright", "check-deps", "tests", "xdoctest"]
+format = { cmd = "uv run ruff format" }
+lint = { cmd = "uv run ruff check --fix" }
+pyright = { cmd = "uv run pyright" }
+check_deps = { cmd = "uv run deptry ." }
+tests = { cmd = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov" }
+xdoctest = { cmd = "uv run xdoctest --quiet -m src/power_metrics_lib" }
+serve_docs = { cmd = "uv run mkdocs serve" }
+release = { sequence = ["lint", "pyright", "check_deps", "tests", "xdoctest"] }
