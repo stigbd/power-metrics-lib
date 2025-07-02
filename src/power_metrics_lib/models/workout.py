@@ -206,17 +206,17 @@ class Workout(Activity):
             raise FileNotFoundError(msg) from e
 
         root = tree.getroot()
-        blocks = root.findall("./workout/*")
+        blocks = root.findall("./workout/*") if root else []
 
         for block in blocks:
             if block.tag == "SteadyState":
                 power = float(block.attrib["Power"])
-                duration = int(round(float(block.attrib["Duration"])))
+                duration = round(float(block.attrib["Duration"]))
                 self.blocks.append(SteadyState(power=power, duration=duration))
             elif block.tag in ("Cooldown", "Warmup", "Ramp"):
                 power_low = float(block.attrib["PowerLow"])
                 power_high = float(block.attrib["PowerHigh"])
-                duration = int(round(float(block.attrib["Duration"])))
+                duration = round(float(block.attrib["Duration"]))
                 if block.tag == "Cooldown":
                     self.blocks.append(
                         Cooldown(
@@ -246,8 +246,8 @@ class Workout(Activity):
                 repeat = int(block.attrib["Repeat"])
                 on_power = float(block.attrib["OnPower"])
                 off_power = float(block.attrib["OffPower"])
-                on_duration = int(round(float(block.attrib["OnDuration"])))
-                off_duration = int(round(float(block.attrib["OffDuration"])))
+                on_duration = round(float(block.attrib["OnDuration"]))
+                off_duration = round(float(block.attrib["OffDuration"]))
                 self.blocks.append(
                     Interval(
                         repeat=repeat,
@@ -258,7 +258,7 @@ class Workout(Activity):
                     )
                 )
             elif block.tag == "FreeRide":
-                duration = int(round(float(block.attrib["Duration"])))
+                duration = round(float(block.attrib["Duration"]))
                 self.blocks.append(FreeRide(duration))
             else:
                 msg = f"Unknown block type: {block.tag}"

@@ -24,6 +24,8 @@ import numpy as np
 import pandas as pd
 from garmin_fit_sdk import Decoder, Stream
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class Activity:
@@ -148,8 +150,8 @@ class Activity:
             self.timestamps.append(int(message["timestamp"]))
             # Patch missing power data with 0:
             if "power" not in message:  # pragma: no cover
-                msg = f"{message["timestamp"]}: No power data in record message."
-                logging.warning(msg)
+                msg = f"{message['timestamp']}: No power data in record message."
+                logger.warning(msg)
                 self.power.append(0)
             else:
                 self.power.append(int(message["power"]))

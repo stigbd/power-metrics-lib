@@ -25,6 +25,7 @@ dev-dependencies = [
     "ruff>=0.7.3",
     "xdoctest>=1.2.0",
     "nbdime>=4.0.2",
+    "pip-audit>=2.7.3",
 ]
 
 [tool.ruff.lint]
@@ -79,7 +80,17 @@ format = { cmd = "uv run ruff format" }
 lint = { cmd = "uv run ruff check --fix" }
 pyright = { cmd = "uv run pyright" }
 check_deps = { cmd = "uv run deptry ." }
+audit = { cmd = "uv run pip-audit" }
 tests = { cmd = "uv run pytest -s --cov --cov-report=term-missing --cov-report=html:.htmlcov" }
 xdoctest = { cmd = "uv run xdoctest --quiet -m src/power_metrics_lib" }
+create_docs = { cmd = "uv run mkdocs build" }
 serve_docs = { cmd = "uv run mkdocs serve" }
-release = { sequence = ["lint", "pyright", "check_deps", "tests", "xdoctest"] }
+release = { sequence = [
+    "lint",
+    "pyright",
+    "check_deps",
+    "audit",
+    "tests",
+    "xdoctest",
+    "create_docs",
+] }
